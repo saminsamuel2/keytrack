@@ -1,21 +1,41 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
 const StoreContext = createContext();
 
 export const useStore = () => useContext(StoreContext);
 
 export const StoreProvider = ({ children }) => {
+  // Try to load initial data from browser's local storage
+  const loadData = (key, defaultVal) => {
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved) return JSON.parse(saved);
+    } catch(e) {
+      console.warn("Could not load from local storage", e);
+    }
+    return defaultVal;
+  };
+
   // user: { username: string } | null
   const [user, setUser] = useState(null);
 
-  // students: [{ id, name, grade, fee: number }]
-  const [students, setStudents] = useState([]);
-  
-  // attendance: { "YYYY-MM-DD": { studentId: 'P' | 'A' } }
-  const [attendance, setAttendance] = useState({});
-  
-  // fees: { "YYYY-MM": { studentId: true | false } }
-  const [fees, setFees] = useState({});
+  // Load remaining state from storage or defaults
+  const [students, setStudents] = useState(() => loadData('keytrack_students', []));
+  const [attendance, setAttendance] = useState(() => loadData('keytrack_attendance', {}));
+  const [fees, setFees] = useState(() => loadData('keytrack_fees', {}));
+
+  // Save to local storage whenever data changes
+  useEffect(() => {
+    localStorage.setItem('keytrack_students', JSON.stringify(students));
+  }, [students]);
+
+  useEffect(() => {
+    localStorage.setItem('keytrack_attendance', JSON.stringify(attendance));
+  }, [attendance]);
+
+  useEffect(() => {
+    localStorage.setItem('keytrack_fees', JSON.stringify(fees));
+  }, [fees]);
 
   const login = (userData) => {
     setUser(userData);
