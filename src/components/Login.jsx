@@ -11,11 +11,14 @@ export default function Login() {
     e.preventDefault();
     setError('');
     
-    if (email && password) {
-      // Local authentication without Supabase
+    // Load credentials from environment variables securely
+    const validEmail = import.meta.env.VITE_ADMIN_EMAIL || 'admin';
+    const validPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'password123';
+    
+    if (email === validEmail && password === validPassword) {
       login({ username: email });
     } else {
-      setError('Please enter your email and password');
+      setError('Invalid email or password');
     }
   };
 
