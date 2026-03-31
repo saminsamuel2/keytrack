@@ -7,42 +7,51 @@ export default function StudentsTab() {
   const [name, setName] = useState('');
   const [grade, setGrade] = useState('');
   const [fee, setFee] = useState('');
+  const [classesPerMonth, setClassesPerMonth] = useState('8');
 
   // Editing state
   const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({ name: '', grade: '', fee: '' });
+  const [editForm, setEditForm] = useState({ name: '', grade: '', fee: '', classesPerMonth: '' });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !grade || !fee) return;
+    if (!name || !grade || !fee || !classesPerMonth) return;
     addStudent({
       name,
       grade,
-      fee: Number(fee)
+      fee: Number(fee),
+      classesPerMonth: Number(classesPerMonth)
     });
     setName('');
     setGrade('');
     setFee('');
+    setClassesPerMonth('8');
   };
 
   const handleEditClick = (student) => {
     setEditingId(student.id);
-    setEditForm({ name: student.name, grade: student.grade, fee: student.fee });
+    setEditForm({ 
+      name: student.name, 
+      grade: student.grade, 
+      fee: student.fee, 
+      classesPerMonth: student.classesPerMonth || 8 
+    });
   };
 
   const handleSaveEdit = (id) => {
-    if (!editForm.name || !editForm.grade || !editForm.fee) return;
+    if (!editForm.name || !editForm.grade || !editForm.fee || !editForm.classesPerMonth) return;
     editStudent(id, {
       name: editForm.name,
       grade: editForm.grade,
-      fee: Number(editForm.fee)
+      fee: Number(editForm.fee),
+      classesPerMonth: Number(editForm.classesPerMonth)
     });
     setEditingId(null);
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setEditForm({ name: '', grade: '', fee: '' });
+    setEditForm({ name: '', grade: '', fee: '', classesPerMonth: '' });
   };
 
   return (
@@ -62,6 +71,10 @@ export default function StudentsTab() {
             <label>Monthly Fee (AED)</label>
             <input type="number" value={fee} onChange={(e) => setFee(e.target.value)} placeholder="e.g. 500" min="0" />
           </div>
+          <div className="form-group">
+            <label>Classes / Month</label>
+            <input type="number" value={classesPerMonth} onChange={(e) => setClassesPerMonth(e.target.value)} placeholder="e.g. 4 or 8" min="1" />
+          </div>
           <button type="submit" className="btn btn-primary">Add Student</button>
         </form>
       </div>
@@ -78,6 +91,7 @@ export default function StudentsTab() {
                   <th>Name</th>
                   <th>Grade/Class</th>
                   <th>Monthly Fee (AED)</th>
+                  <th>Classes/Month</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -111,6 +125,15 @@ export default function StudentsTab() {
                             min="0"
                           />
                         </td>
+                        <td>
+                          <input 
+                            type="number" 
+                            style={{ padding: '0.4rem', width: '100%', minWidth: '60px' }}
+                            value={editForm.classesPerMonth} 
+                            onChange={(e) => setEditForm({...editForm, classesPerMonth: e.target.value})} 
+                            min="1"
+                          />
+                        </td>
                         <td style={{ display: 'flex', gap: '0.5rem' }}>
                           <button className="icon-btn btn-success" onClick={() => handleSaveEdit(student.id)} title="Save Changes">
                             <Save size={16} />
@@ -125,6 +148,7 @@ export default function StudentsTab() {
                         <td>{student.name}</td>
                         <td>{student.grade}</td>
                         <td>{student.fee.toFixed(2)}</td>
+                        <td>{student.classesPerMonth || 8}</td>
                         <td style={{ display: 'flex', gap: '0.5rem' }}>
                           <button className="icon-btn" style={{ backgroundColor: '#e0e7ff', color: 'var(--primary)' }} onClick={() => handleEditClick(student)} title="Edit Student">
                             <Edit2 size={16} />

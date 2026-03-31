@@ -34,9 +34,8 @@ export default function MonthlyReviewTab() {
     const monthPrefix = month;
     const currentMonthFees = fees[month] || {};
 
-    // Calculate School Days
+    // Calculate School Days (kept for logic reference, but removed from metrics UI)
     const schoolDaysDates = Object.keys(attendance).filter(date => date.startsWith(monthPrefix) && Object.keys(attendance[date]).length > 0);
-    const schoolDays = schoolDaysDates.length;
 
     let expected = 0;
     let collected = 0;
@@ -57,35 +56,32 @@ export default function MonthlyReviewTab() {
         unpaidCount++;
       }
 
-      // Attendance logic
+      // Attendance logic based on classesPerMonth capacity
       let pCount = 0;
-      let aCount = 0;
       
       schoolDaysDates.forEach(date => {
         const status = attendance[date][student.id];
         if (status === 'P') pCount++;
-        if (status === 'A') aCount++;
       });
 
-      const totalRecorded = pCount + aCount;
-      const attPercent = totalRecorded === 0 ? 0 : (pCount / totalRecorded) * 100;
+      const totalClasses = student.classesPerMonth || 8;
+      
+      let attPercent = (pCount / totalClasses) * 100;
+      if (attPercent > 100) attPercent = 100; // Cap at 100% per user request
 
-      if (totalRecorded > 0) {
-        totalAttendancePercent += attPercent;
-        studentWithRecords++;
-      }
+      totalAttendancePercent += attPercent;
 
       return {
         ...student,
         pCount,
-        aCount,
+        totalClasses,
         attPercent,
         isPaid
       };
     });
 
     const pending = expected - collected;
-    const avgAttendance = studentWithRecords === 0 ? 0 : totalAttendancePercent / studentWithRecords;
+    const avgAttendance = students.length === 0 ? 0 : totalAttendancePercent / students.length;
 
     const barData = {
       labels: studentStats.map(s => s.name),
@@ -138,7 +134,6 @@ export default function MonthlyReviewTab() {
     return {
       report: {
         totalStudents: students.length,
-        schoolDays,
         avgAttendance,
         expected,
         collected,
@@ -172,10 +167,6 @@ export default function MonthlyReviewTab() {
         <div className="metric-card bg-primary">
           <div className="metric-title">Total Students</div>
           <div className="metric-value">{report.totalStudents}</div>
-        </div>
-        <div className="metric-card bg-primary">
-          <div className="metric-title">School Days</div>
-          <div className="metric-value">{report.schoolDays}</div>
         </div>
         <div className="metric-card bg-indigo">
           <div className="metric-title">Avg Attendance</div>
@@ -214,8 +205,7 @@ export default function MonthlyReviewTab() {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Present</th>
-                  <th>Absent</th>
+                  <th>Attendance Status</th>
                   <th>Attendance %</th>
                   <th>Fee Amount</th>
                   <th>Payment Status</th>
@@ -225,8 +215,7 @@ export default function MonthlyReviewTab() {
                 {charts.studentStats.map((student) => (
                   <tr key={student.id}>
                     <td>{student.name}</td>
-                    <td><span className="badge badge-success">{student.pCount}</span></td>
-                    <td><span className="badge badge-danger">{student.aCount}</span></td>
+                    <td><span className="badge badge-success">{student.pCount} / {student.totalClasses} classes attended</span></td>
                     <td>
                       <span className={`badge ${student.attPercent >= 75 ? 'badge-success' : 'badge-amber'}`}>
                         {student.attPercent.toFixed(1)}%
