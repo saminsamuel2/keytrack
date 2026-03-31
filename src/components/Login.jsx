@@ -3,7 +3,7 @@ import { useStore } from '../StoreContext';
 
 export default function Login() {
   const { login } = useStore();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -12,13 +12,13 @@ export default function Login() {
     setError('');
     
     // Load credentials from environment variables securely
-    const validEmail = import.meta.env.VITE_ADMIN_EMAIL || 'admin';
+    const validUsername = import.meta.env.VITE_ADMIN_USERNAME || 'admin';
     const validPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'password123';
     
-    if (email === validEmail && password === validPassword) {
-      login({ username: email });
+    if (username === validUsername && password === validPassword) {
+      login({ username: username });
     } else {
-      setError('Invalid email or password');
+      setError('Invalid username or password');
     }
   };
 
@@ -33,12 +33,12 @@ export default function Login() {
         {error && <div className="login-error">{error}</div>}
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label>Email</label>
+            <label>Username</label>
             <input 
-              type="email" 
-              value={email} 
-              onChange={e => setEmail(e.target.value)} 
-              placeholder="Enter your email"
+              type="text" 
+              value={username} 
+              onChange={e => setUsername(e.target.value)} 
+              placeholder="Enter your username"
               required 
             />
           </div>
