@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { useStore } from '../StoreContext';
+import { supabase } from '../supabaseClient';
 
 export default function Login() {
   const { login } = useStore();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (username === 'samin' && password === 'samin123') {
-      login({ username: 'Samin' });
+    setError('');
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setError('Invalid email or password');
     } else {
-      setError('Invalid credentials');
+      login({ username: data.user.email });
     }
   };
 
@@ -26,11 +29,12 @@ export default function Login() {
         {error && <div className="login-error">{error}</div>}
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label>Username</label>
+            <label>Email</label>
             <input 
-              type="text" 
-              value={username} 
-              onChange={e => setUsername(e.target.value)} 
+              type="email" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)} 
+              placeholder="Enter your email"
               required 
             />
           </div>
