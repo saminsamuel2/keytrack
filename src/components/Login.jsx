@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useStore } from '../StoreContext';
-import { supabase } from '../supabaseClient';
 
 export default function Login() {
   const { login } = useStore();
@@ -8,16 +7,18 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setError('Invalid email or password');
+    
+    if (email && password) {
+      // Local authentication without Supabase
+      login({ username: email });
     } else {
-      login({ username: data.user.email });
+      setError('Please enter your email and password');
     }
   };
+
 
   return (
     <div className="login-container">

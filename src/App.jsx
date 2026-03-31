@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { StoreProvider, useStore } from './StoreContext';
-import { isSupabaseConfigured } from './supabaseClient';
 import Login from './components/Login';
 import StudentsTab from './components/StudentsTab';
 import AttendanceTab from './components/AttendanceTab';
@@ -74,27 +73,6 @@ function AppLayout() {
 }
 
 export default function App() {
-  if (!isSupabaseConfigured) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', padding: '2rem', textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
-        <h1 style={{ color: '#ef4444', marginBottom: '1rem' }}>⚠️ Action Required: Supabase Variables Missing</h1>
-        <p style={{ fontSize: '1.2rem', maxWidth: '600px', lineHeight: '1.6' }}>
-          Your Vercel deployment is missing the required environment variables to connect to your database.
-        </p>
-        <div style={{ backgroundColor: '#1e293b', color: '#f8fafc', padding: '1.5rem', borderRadius: '8px', textAlign: 'left', marginTop: '2rem', width: '100%', maxWidth: '600px' }}>
-          <h3 style={{ marginTop: 0 }}>How to fix:</h3>
-          <ol style={{ paddingLeft: '1.2rem', marginBottom: 0 }}>
-            <li style={{ marginBottom: '0.8rem' }}>Go to your Vercel Dashboard for this project.</li>
-            <li style={{ marginBottom: '0.8rem' }}>Go to <b>Settings &gt; Environment Variables</b>.</li>
-            <li style={{ marginBottom: '0.8rem' }}>Add <code>VITE_SUPABASE_URL</code> and paste your Supabase URL.</li>
-            <li style={{ marginBottom: '0.8rem' }}>Add <code>VITE_SUPABASE_ANON_KEY</code> and paste your Supabase Anon Key.</li>
-            <li>Go to the Deployments tab and click <b>Redeploy</b>.</li>
-          </ol>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <StoreProvider>
       <AppLayout />
