@@ -33,6 +33,12 @@ export const StoreProvider = ({ children }) => {
     setStudents((prev) => prev.filter(s => s.id !== id));
   };
 
+  const editStudent = (id, updatedData) => {
+    setStudents((prev) => prev.map(s => 
+      s.id === id ? { ...s, ...updatedData } : s
+    ));
+  };
+
   const markAttendance = (date, studentId, status) => {
     setAttendance((prev) => ({
       ...prev,
@@ -60,6 +66,7 @@ export const StoreProvider = ({ children }) => {
     logout,
     addStudent,
     removeStudent,
+    editStudent,
     markAttendance,
     toggleFee
   }), [user, students, attendance, fees]);
